@@ -3,6 +3,28 @@ import { User, Users, UserDocument, IUserLogin } from '../mongodb/models/user';
 import {auth} from '../middleware/auth'
 import { upload } from '../mongodb/multerSettings'
 
+/*
+    This class represents the user routes.
+
+    Get:
+    ------------------------------------------
+    /me - return details on specific user (by id from the jwt token) as IUserOutput (see models/user.ts)
+
+    Post:
+    ------------------------------------------
+    /login - for login a user. the body should be as IUserLogin form (see models/user.ts) 
+    /logout - for logout a specific user from specific connection using the jwt token.
+    /me/avatar - for set an image for specific user. the image should pass the multerSettings middleware.
+    / - for post a new user. the body should be as IUserInput form.
+
+    Patch:
+    ------------------------------------------
+    /me - for edit the details of specific user. the body should contains only keys from this list:
+    ['password', 'name', 'email'] other properties are immutable.
+
+*/
+
+
 export const router = express.Router()
 
 
@@ -38,7 +60,7 @@ router.post('/logout',auth ,async(req:any,res)=>{
 
 router.patch('/me',auth,async(req:any,res)=>{
     try{
-        const allowToEdit = ['password', 'name', 'avatar', 'email'];
+        const allowToEdit = ['password', 'name', 'email'];
         const toEdit = Object.keys(req.body);
         const canEdit = toEdit.every((x:string)=>allowToEdit.includes(x));
         if(!canEdit)
