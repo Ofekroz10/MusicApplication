@@ -2,6 +2,8 @@ import { Document, Schema, model, Model } from 'mongoose'
 import validator = require('validator')
 import bcrypt = require('bcryptjs')
 import express = require('express')
+import jwt = require('jsonwebtoken')
+import {secretKey} from '../../middleware/auth'
 
 /*
     This file contains:
@@ -50,6 +52,7 @@ export class User{
     password:string;
     credits:number;
     avatar:string;
+    tokens:{token:string}[]
 
     constructor({name,email,password}:IUserInput){
         this.name = name;
@@ -57,9 +60,10 @@ export class User{
         this.password = password;
         this.credits = 0;
         this.avatar = ''
+        this.tokens = [];
     }
 
-
+    /* Only function that dont use _id can be here ... */
     toResponse():IUserOutput{
         return{
             name:this.name,
@@ -109,11 +113,28 @@ let schema = new Schema({
 
     avatar:{
         type:String
-    }
+    },
+
+    tokens:[{
+        token:{
+            type:String,
+            require: true
+        }
+    }]
 })
 
-// register the 'static' method toResponse
+// register the user method 'toResponse'
 schema.method('toResponse',User.prototype.toResponse)
+
+// implemention of method from UserDocument, typeof this here is UserDocumnet
+// token contais _id
+schema.methods.generateAuthToken = async function(this:UserDocument):Promise<string>{
+    const token = jwt.sign({_id:this._id.toString()},secretKey);
+    this.tokens = this.tokens.concat({token});
+    await this.save()
+
+    return token;
+}
 schema.statics.findByEmailPassLogin = async(email:string, password:string):Promise<UserDocument>=>{
     let user = await Users.findOne({email});
     if(!user)
@@ -136,8 +157,10 @@ schema.pre('save', async function(this:UserDocument,next){
     next()
 })
 
-//for allowing use User methods
-export interface UserDocument extends User, Document { }
+// for allowing use User & Document properties/methods, declare here method that use _id 
+export interface UserDocument extends User, Document {
+     generateAuthToken():Promise<string>
+}
 
 //now we can use User functions, because model will return UserDocument and not Document
 // and the schema is typeof IUserModel so static method of schema should be in IUserModel

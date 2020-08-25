@@ -13,8 +13,6 @@ exports.Users = exports.User = void 0;
 const mongoose_1 = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const auth_1 = require("../../middleware/auth");
 class User {
     constructor({ name, email, password }) {
         this.name = name;
@@ -22,9 +20,7 @@ class User {
         this.password = password;
         this.credits = 0;
         this.avatar = '';
-        this.tokens = [];
     }
-    /* Only function that dont use _id can be here ... */
     toResponse() {
         return {
             name: this.name,
@@ -67,26 +63,10 @@ let schema = new mongoose_1.Schema({
     },
     avatar: {
         type: String
-    },
-    tokens: [{
-            token: {
-                type: String,
-                require: true
-            }
-        }]
+    }
 });
-// register the user method 'toResponse'
+// register the 'static' method toResponse
 schema.method('toResponse', User.prototype.toResponse);
-// implemention of method from UserDocument, typeof this here is UserDocumnet
-// token contais _id
-schema.methods.generateAuthToken = function () {
-    return __awaiter(this, void 0, void 0, function* () {
-        const token = jwt.sign({ _id: this._id.toString() }, auth_1.secretKey);
-        this.tokens = this.tokens.concat({ token });
-        yield this.save();
-        return token;
-    });
-};
 schema.statics.findByEmailPassLogin = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
     let user = yield exports.Users.findOne({ email });
     if (!user)
