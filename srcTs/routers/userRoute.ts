@@ -97,7 +97,7 @@ router.post('/me/avatar',auth,upload.single('avatar'),async(req:any,res:any)=>{
 router.post('/',async(req,res)=>{
     try{
         const user = new User(req.body);
-        let data:UserDocument = await Users.create(user);
+        const data:UserDocument = await Users.create(user);
         await data.save();
         res.send({
             _id:data._id,

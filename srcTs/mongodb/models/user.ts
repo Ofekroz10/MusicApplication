@@ -75,7 +75,7 @@ export class User{
 
 }
 
-let schema = new Schema({
+const schema = new Schema({
     name:{
         type: String,
         required: true
@@ -136,11 +136,11 @@ schema.methods.generateAuthToken = async function(this:UserDocument):Promise<str
     return token;
 }
 schema.statics.findByEmailPassLogin = async(email:string, password:string):Promise<UserDocument>=>{
-    let user = await Users.findOne({email});
+    const user = await Users.findOne({email});
     if(!user)
         throw new Error('login failed- email not exist');
     console.log(user)
-    let match = await bcrypt.compare(password,user.password);
+    const match = await bcrypt.compare(password,user.password);
     console.log(match)
     if(!match)
         throw new Error('login failed password');
