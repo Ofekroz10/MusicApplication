@@ -21,7 +21,7 @@ class User {
         this.email = email;
         this.password = password;
         this.credits = 0;
-        this.avatar = '';
+        this.avatar = Buffer.from('');
         this.tokens = [];
     }
     /* Only function that dont use _id can be here ... */
@@ -66,7 +66,7 @@ let schema = new mongoose_1.Schema({
         type: Number
     },
     avatar: {
-        type: String
+        type: Buffer
     },
     tokens: [{
             token: {

@@ -42,7 +42,7 @@ export interface IUserOutput{
     name:string;
     email:string;
     credits:number;
-    avatar:string;
+    avatar:Buffer;
 }
 
 
@@ -51,7 +51,7 @@ export class User{
     email:string;
     password:string;
     credits:number;
-    avatar:string;
+    avatar:Buffer;
     tokens:{token:string}[]
 
     constructor({name,email,password}:IUserInput){
@@ -59,7 +59,7 @@ export class User{
         this.email = email;
         this.password = password;
         this.credits = 0;
-        this.avatar = ''
+        this.avatar = Buffer.from('');
         this.tokens = [];
     }
 
@@ -112,7 +112,7 @@ let schema = new Schema({
     },
 
     avatar:{
-        type:String
+        type:Buffer
     },
 
     tokens:[{

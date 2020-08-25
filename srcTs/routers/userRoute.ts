@@ -1,6 +1,7 @@
 import express = require('express');
 import { User, Users, UserDocument, IUserLogin } from '../mongodb/models/user';
 import {auth} from '../middleware/auth'
+import { upload } from '../mongodb/multerSettings'
 
 export const router = express.Router()
 
@@ -53,6 +54,22 @@ router.patch('/me',auth,async(req:any,res)=>{
     catch(e){
         res.status(400).send({error:e.message})
     }
+})
+
+
+
+
+/* put the file in form-data key=avatar */
+
+router.post('/me/avatar',auth,upload.single('avatar'),async(req:any,res:any)=>{
+    if(req.file){
+        req.user.avatar = req.file.buffer;
+        await req.user.save();
+        return res.send('Upload completed!')
+    }
+   res.status(400).send({error:'please upload a file'})
+},(error:any,req:express.Request,res:express.Response,next:express.NextFunction)=>{
+    res.status(400).send({error: error.message});
 })
 
 router.post('/',async(req,res)=>{

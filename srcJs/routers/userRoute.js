@@ -13,6 +13,7 @@ exports.router = void 0;
 const express = require("express");
 const user_1 = require("../mongodb/models/user");
 const auth_1 = require("../middleware/auth");
+const multerSettings_1 = require("../mongodb/multerSettings");
 exports.router = express.Router();
 exports.router.get('/me', auth_1.auth, (req, res) => {
     res.send(req.user.toResponse());
@@ -57,6 +58,17 @@ exports.router.patch('/me', auth_1.auth, (req, res) => __awaiter(void 0, void 0,
         res.status(400).send({ error: e.message });
     }
 }));
+/* put the file in form-data key=avatar */
+exports.router.post('/me/avatar', auth_1.auth, multerSettings_1.upload.single('avatar'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.file) {
+        req.user.avatar = req.file.buffer;
+        yield req.user.save();
+        return res.send('Upload completed!');
+    }
+    res.status(400).send({ error: 'please upload a file' });
+}), (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
+});
 exports.router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = new user_1.User(req.body);
