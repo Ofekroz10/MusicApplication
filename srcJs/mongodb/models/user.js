@@ -35,7 +35,7 @@ class User {
     }
 }
 exports.User = User;
-let schema = new mongoose_1.Schema({
+const schema = new mongoose_1.Schema({
     name: {
         type: String,
         required: true
@@ -88,11 +88,11 @@ schema.methods.generateAuthToken = function () {
     });
 };
 schema.statics.findByEmailPassLogin = (email, password) => __awaiter(void 0, void 0, void 0, function* () {
-    let user = yield exports.Users.findOne({ email });
+    const user = yield exports.Users.findOne({ email });
     if (!user)
         throw new Error('login failed- email not exist');
     console.log(user);
-    let match = yield bcrypt.compare(password, user.password);
+    const match = yield bcrypt.compare(password, user.password);
     console.log(match);
     if (!match)
         throw new Error('login failed password');

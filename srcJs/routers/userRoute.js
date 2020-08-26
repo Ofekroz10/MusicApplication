@@ -14,6 +14,26 @@ const express = require("express");
 const user_1 = require("../mongodb/models/user");
 const auth_1 = require("../middleware/auth");
 const multerSettings_1 = require("../mongodb/multerSettings");
+/*
+    This class represents the user routes.
+
+    Get:
+    ------------------------------------------
+    /me - return details on specific user (by id from the jwt token) as IUserOutput (see models/user.ts)
+
+    Post:
+    ------------------------------------------
+    /login - for login a user. the body should be as IUserLogin form (see models/user.ts)
+    /logout - for logout a specific user from specific connection using the jwt token.
+    /me/avatar - for set an image for specific user. the image should pass the multerSettings middleware.
+    / - for post a new user. the body should be as IUserInput form.
+
+    Patch:
+    ------------------------------------------
+    /me - for edit the details of specific user. the body should contains only keys from this list:
+    ['password', 'name', 'email'] other properties are immutable.
+
+*/
 exports.router = express.Router();
 exports.router.get('/me', auth_1.auth, (req, res) => {
     res.send(req.user.toResponse());
@@ -43,7 +63,7 @@ exports.router.post('/logout', auth_1.auth, (req, res) => __awaiter(void 0, void
 }));
 exports.router.patch('/me', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const allowToEdit = ['password', 'name', 'avatar', 'email'];
+        const allowToEdit = ['password', 'name', 'email'];
         const toEdit = Object.keys(req.body);
         const canEdit = toEdit.every((x) => allowToEdit.includes(x));
         if (!canEdit)
@@ -72,7 +92,7 @@ exports.router.post('/me/avatar', auth_1.auth, multerSettings_1.upload.single('a
 exports.router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = new user_1.User(req.body);
-        let data = yield user_1.Users.create(user);
+        const data = yield user_1.Users.create(user);
         yield data.save();
         res.send(Object.assign({ _id: data._id }, data.toResponse()));
     }
