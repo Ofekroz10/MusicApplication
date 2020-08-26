@@ -15,6 +15,10 @@
 import request = require('request')
 import { Video } from '../mongodb/models/video';
 
+/*
+    This method make request to support async & await
+    by creating a promise for every request
+*/
 
 function doRequest(url:string) {
     return new Promise(function (resolve, reject) {
