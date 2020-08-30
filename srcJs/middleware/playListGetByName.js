@@ -24,7 +24,7 @@ exports.playListGetByName = (req, res, next) => __awaiter(void 0, void 0, void 0
             }
         }).execPopulate();
         const playList = req.user.playLists;
-        if (playList)
+        if (playList.length > 0)
             return next();
         throw new Error(`Cannot find playlist: ${req.params.pName}`);
     }

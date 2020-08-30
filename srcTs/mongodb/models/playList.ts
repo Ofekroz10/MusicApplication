@@ -30,7 +30,6 @@ export class PlayList{
     shuffle():Video[]{ // shuffle the playlist O(n) time complexity, O(n) space complexity
         let arr:Video[] = [...this.videos];
         let index = arr.length-1;
-        console.log('shuffle')
         while(index > 0){
             let choosenI = Math.floor(Math.random() * index); // random number [0,index]
             // swap choosenI and index
@@ -44,7 +43,6 @@ export class PlayList{
 
     addToList(video:Video):void{
         const dontContain = this.videos.every((x:Video)=>x.youtubeId !==video.youtubeId)
-        console.log(dontContain)
         if(dontContain)
             this.videos.push(video)
         else

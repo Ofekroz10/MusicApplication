@@ -25,7 +25,6 @@ class PlayList {
     shuffle() {
         let arr = [...this.videos];
         let index = arr.length - 1;
-        console.log('shuffle');
         while (index > 0) {
             let choosenI = Math.floor(Math.random() * index); // random number [0,index]
             // swap choosenI and index
@@ -38,7 +37,6 @@ class PlayList {
     }
     addToList(video) {
         const dontContain = this.videos.every((x) => x.youtubeId !== video.youtubeId);
-        console.log(dontContain);
         if (dontContain)
             this.videos.push(video);
         else

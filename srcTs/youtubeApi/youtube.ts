@@ -49,8 +49,8 @@ const toSong = async (res:any):Promise<Video>=>{
 }
 
 
-export const serachByKeyword = async (keyword:string)=>{
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
+export const serachByKeyword = async (keyword:string,limitation:number)=>{
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
     let data:any =await doRequest(url)
     data = data.items.filter((x:any)=>x.id.videoId);
     let songs:Video[] = [];

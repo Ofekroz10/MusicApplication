@@ -18,7 +18,20 @@ const video_1 = require("../mongodb/models/video");
 const playList_1 = require("../mongodb/models/playList");
 exports.router = express.Router();
 /*
-    Create new playlist according the user
+    POST:
+    /new - Create new playlist according to the user
+
+    GET:
+    /:pName - Return the playlist by pName(playlist name)
+    / - Return all the playlists of the specific user
+
+    PUT:
+    /:pName/add - Add a video to a specific playlist
+    /:pName/addSome - Add array of videos to specific playlist
+
+    DELETE:
+    /:pName/delete - Delete a specific video from playlist by yId(youtube id of the video)
+    /:pName - Delete the specific playlist
 */
 exports.router.post('/new', [auth_1.auth, playListUniqName_1.playListUniqName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -35,8 +48,6 @@ exports.router.get('/:pName', [auth_1.auth, playListGetByName_1.playListGetByNam
     try {
         const playList = req.user.playLists[0];
         if (playList) {
-            console.log(playList);
-            console.log(req.query.shuffle);
             if (req.query.shuffle === 'true')
                 return res.send(playList.shuffle());
             return res.send(playList);
@@ -89,6 +100,17 @@ exports.router.delete('/:pName/delete', [auth_1.auth, playListGetByName_1.playLi
         playList.removeFromList(yId);
         yield playList.save();
         res.send(playList.videos);
+    }
+    catch (e) {
+        res.status(404).send({ error: e.message });
+    }
+}));
+exports.router.delete('/:pName', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const playList = req.user.playLists[0];
+        yield playList_1.PlayLists.deleteOne({ name: playList.name, owner: req.user._id });
+        yield req.user.populate('playLists').execPopulate();
+        res.send(req.user.playLists);
     }
     catch (e) {
         res.status(404).send({ error: e.message });

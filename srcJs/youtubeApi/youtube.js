@@ -51,8 +51,8 @@ const toSong = (res) => __awaiter(void 0, void 0, void 0, function* () {
     const obj = new video_1.Video(res.snippet.title, res.snippet.channelTitle, res.id.videoId, yield getCategory(res.id.videoId));
     return obj;
 });
-exports.serachByKeyword = (keyword) => __awaiter(void 0, void 0, void 0, function* () {
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
+exports.serachByKeyword = (keyword, limitation) => __awaiter(void 0, void 0, void 0, function* () {
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
     let data = yield doRequest(url);
     data = data.items.filter((x) => x.id.videoId);
     let songs = [];

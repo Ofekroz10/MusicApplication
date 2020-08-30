@@ -14,7 +14,7 @@ export const playListGetByName =  async (req:any,res:any,next:any):Promise<void>
         }).execPopulate();
 
         const playList = req.user.playLists;
-        if(playList)
+        if(playList.length > 0 )
             return next();
 
         throw new Error(`Cannot find playlist: ${req.params.pName}`);

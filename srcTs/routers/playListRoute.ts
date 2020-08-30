@@ -5,11 +5,25 @@ import {playListUniqName} from '../middleware/playListUniqName'
 import {playListGetByName} from '../middleware/playListGetByName' 
 import { Video, VideoDocument, Videos } from '../mongodb/models/video';
 import { PlayList,IPlayListDocument,PlayLists } from '../mongodb/models/playList';
+import { userInfo } from 'os';
 
 export const router = express.Router()
 
 /*
-    Create new playlist according the user
+    POST:
+    /new - Create new playlist according to the user
+
+    GET:
+    /:pName - Return the playlist by pName(playlist name)
+    / - Return all the playlists of the specific user
+
+    PUT:
+    /:pName/add - Add a video to a specific playlist
+    /:pName/addSome - Add array of videos to specific playlist
+
+    DELETE:
+    /:pName/delete - Delete a specific video from playlist by yId(youtube id of the video)
+    /:pName - Delete the specific playlist
 */
 
 router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
@@ -92,6 +106,18 @@ router.delete('/:pName/delete',[auth,playListGetByName],async(req:any,res:any)=>
         playList.removeFromList(yId);
         await playList.save();
         res.send(playList.videos); 
+    }
+    catch(e){
+        res.status(404).send({error:e.message});
+    }
+})
+
+router.delete('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
+    try{
+        const playList:IPlayListDocument = req.user.playLists[0];
+        await PlayLists.deleteOne({name:playList.name, owner:req.user._id});
+        await req.user.populate('playLists').execPopulate();
+        res.send(req.user.playLists);
     }
     catch(e){
         res.status(404).send({error:e.message});
