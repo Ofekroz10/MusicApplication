@@ -1,3 +1,8 @@
+/*
+    This middleware put in req.user.playlists the current playlist accoridng to req.body.pName
+    (The name of the playlist), if pName dont exist in the playlist collection of the specific user
+    throw `Cannot find playlist: ${req.params.pName}`
+*/
 
 export const playListGetByName =  async (req:any,res:any,next:any):Promise<void>=>{
     try{

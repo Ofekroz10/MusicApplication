@@ -2,6 +2,19 @@ import { Document, Schema, model, Model } from 'mongoose'
 import {Video} from './video'
 import mongoose = require('mongoose')
 
+/*
+    PlayList class: represents a playlist document:
+    name:string - the name of the playlist, should be uniqe.
+    videos:Video[]; - the videos array of this playlist.
+    owner:Schema.Types.ObjectId - the id of the playlist owner. ( a user )
+
+    Methods:
+    shuffle- return an array of videos in a random order.
+    addTolist- add the video to the playlist, throws 'video already in the playlist' if the video already
+    in the playlist.
+    removeFromList- remove a video from playlist.
+
+*/
 
 export class PlayList{
     name:string;
