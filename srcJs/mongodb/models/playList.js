@@ -23,7 +23,18 @@ class PlayList {
         this.name = name;
     }
     shuffle() {
-        return [];
+        let arr = [...this.videos];
+        let index = arr.length - 1;
+        console.log('shuffle');
+        while (index > 0) {
+            let choosenI = Math.floor(Math.random() * index); // random number [0,index]
+            // swap choosenI and index
+            const item = arr[index];
+            arr[index] = arr[choosenI];
+            arr[choosenI] = item;
+            index--;
+        }
+        return arr;
     }
     addToList(video) {
         const dontContain = this.videos.every((x) => x.youtubeId !== video.youtubeId);
@@ -56,4 +67,5 @@ const playListSchema = new mongoose_1.Schema({
 });
 playListSchema.method('addToList', PlayList.prototype.addToList);
 playListSchema.method('removeFromList', PlayList.prototype.removeFromList);
+playListSchema.method('shuffle', PlayList.prototype.shuffle);
 exports.PlayLists = mongoose_1.model('PlayList', playListSchema);

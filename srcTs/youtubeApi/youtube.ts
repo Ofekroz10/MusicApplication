@@ -26,6 +26,7 @@ function doRequest(url:string):Promise<any>{
         if (!error && res.statusCode == 200) {
           resolve(JSON.parse(body));
         } else {
+            console.log(res.statusCode)
           reject(error);
         }
       });
@@ -34,7 +35,7 @@ function doRequest(url:string):Promise<any>{
   
 
 const getCategory = async (videoId:string)=>{
-    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=AIzaSyDEHVrShl-N08wj0l-FNqroQXgKsvsIhFk`
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`
     const data:any = await doRequest(url);
     return data.items[0].snippet.categoryId;
 
@@ -49,7 +50,7 @@ const toSong = async (res:any):Promise<Video>=>{
 
 
 export const serachByKeyword = async (keyword:string)=>{
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${keyword}&key=AIzaSyDEHVrShl-N08wj0l-FNqroQXgKsvsIhFk`;
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
     let data:any =await doRequest(url)
     data = data.items.filter((x:any)=>x.id.videoId);
     let songs:Video[] = [];
@@ -62,7 +63,7 @@ export const serachByKeyword = async (keyword:string)=>{
 }
 
 export const getTupleCat = async():Promise<[number,string]>=>{
-    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyDEHVrShl-N08wj0l-FNqroQXgKsvsIhFk'
+    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg'
     let data:any = await doRequest(url);
     data = data.items.map((x:any):[number,string]=>{
         return [+x.id,x.snippet.title]
@@ -71,7 +72,7 @@ export const getTupleCat = async():Promise<[number,string]>=>{
 }
 
 export const getCat = async():Promise<number[]>=>{
-    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyDEHVrShl-N08wj0l-FNqroQXgKsvsIhFk'
+    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg'
     let data:any = await doRequest(url);
     data = data.items.map((x:any):number=>{
         return (+x.id);

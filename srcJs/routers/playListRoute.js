@@ -33,9 +33,14 @@ exports.router.post('/new', [auth_1.auth, playListUniqName_1.playListUniqName], 
 }));
 exports.router.get('/:pName', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const playList = req.user.playLists;
-        if (playList)
+        const playList = req.user.playLists[0];
+        if (playList) {
+            console.log(playList);
+            console.log(req.query.shuffle);
+            if (req.query.shuffle === 'true')
+                return res.send(playList.shuffle());
             return res.send(playList);
+        }
         throw new Error(`Cannot find playlist: ${req.params.pName}`);
     }
     catch (e) {

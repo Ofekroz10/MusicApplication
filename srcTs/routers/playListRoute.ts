@@ -28,9 +28,13 @@ router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
 
 router.get('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
     try{
-        const playList = req.user.playLists;
+        const playList = req.user.playLists[0];
         if(playList)
+        {
+            if(req.query.shuffle === 'true')
+                return res.send(playList.shuffle());
             return res.send(playList);
+        }
 
         throw new Error(`Cannot find playlist: ${req.params.pName}`);
     }
@@ -38,6 +42,7 @@ router.get('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
         res.status(404).send({error:e.message});
     }
 })
+
 
 
 router.get('/',auth,async(req:any,res)=>{

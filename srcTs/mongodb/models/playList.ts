@@ -27,8 +27,19 @@ export class PlayList{
         this.name =name;
     }
 
-    shuffle():Schema.Types.ObjectId[]{
-        return [];
+    shuffle():Video[]{ // shuffle the playlist O(n) time complexity, O(n) space complexity
+        let arr:Video[] = [...this.videos];
+        let index = arr.length-1;
+        console.log('shuffle')
+        while(index > 0){
+            let choosenI = Math.floor(Math.random() * index); // random number [0,index]
+            // swap choosenI and index
+            const item = arr[index];
+            arr[index] = arr[choosenI];
+            arr[choosenI] = item;
+            index--;
+        }
+        return arr;
     }
 
     addToList(video:Video):void{
@@ -68,6 +79,7 @@ const playListSchema = new Schema({
 
 playListSchema.method('addToList',PlayList.prototype.addToList);
 playListSchema.method('removeFromList',PlayList.prototype.removeFromList);
+playListSchema.method('shuffle',PlayList.prototype.shuffle);
 
 export interface IPlayListDocument extends Document, PlayList{}
 
