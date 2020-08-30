@@ -22,7 +22,7 @@ exports.router.get('/search/:keyword', (req, res) => __awaiter(void 0, void 0, v
         res.status(400).send({ error: e.message });
     }
 }));
-exports.router.get('/categories', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield youtube_1.getTupleCat();
         res.send(data);

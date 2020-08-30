@@ -13,7 +13,7 @@ router.get('/search/:keyword', async (req,res)=>{
     }
 })
 
-router.get('/categories', async (req,res)=>{
+router.get('/', async (req,res)=>{
     try{
         const data:[number,string]  = await getTupleCat();
         res.send(data);

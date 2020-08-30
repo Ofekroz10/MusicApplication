@@ -63,6 +63,20 @@ exports.router.put('/:pName/add', [auth_1.auth, playListGetByName_1.playListGetB
         res.status(404).send({ error: e.message });
     }
 }));
+exports.router.put('/:pName/addSome', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const playList = req.user.playLists[0];
+        req.body.forEach((x) => {
+            const video = new video_1.Video(x.name, x.channelName, x.youtubeId, x.categoryNum);
+            playList.addToList(video);
+        });
+        yield playList.save();
+        res.send(playList.videos);
+    }
+    catch (e) {
+        res.status(404).send({ error: e.message });
+    }
+}));
 exports.router.delete('/:pName/delete', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = req.user.playLists[0];

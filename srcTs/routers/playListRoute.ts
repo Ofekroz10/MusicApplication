@@ -64,6 +64,22 @@ router.put('/:pName/add',[auth,playListGetByName],async(req:any,res:any)=>{
     }
 })
 
+router.put('/:pName/addSome',[auth,playListGetByName],async(req:any,res:any)=>{
+    try{
+        const playList:IPlayListDocument = req.user.playLists[0];
+        req.body.forEach((x:Video)=>{
+            const video = new Video(x.name,x.channelName,x.youtubeId,x.categoryNum);
+            playList.addToList(video);
+        })
+        await playList.save();
+        res.send(playList.videos); 
+    }
+    catch(e){
+        res.status(404).send({error:e.message});
+    }
+})
+
+
 router.delete('/:pName/delete',[auth,playListGetByName],async(req:any,res:any)=>{
     try{
         const playList:IPlayListDocument = req.user.playLists[0];
