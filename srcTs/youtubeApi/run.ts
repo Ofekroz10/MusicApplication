@@ -1,6 +1,7 @@
 import {serachByKeyword, getTupleCat} from './youtube'
-import {Video} from '../mongodb/models/video'
+import {Video, Videos} from '../mongodb/models/video'
 
+/*
 getTupleCat().then((data:any)=>console.log(data))
 
 serachByKeyword('nature').then((data:Video[])=>{
@@ -8,6 +9,9 @@ serachByKeyword('nature').then((data:Video[])=>{
 }).catch((e)=>{
     console.log(e)
 })
+
+*/
+
 
 
 

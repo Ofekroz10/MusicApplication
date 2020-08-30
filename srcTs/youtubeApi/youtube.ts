@@ -20,7 +20,7 @@ import { Video } from '../mongodb/models/video';
     by creating a promise for every request
 */
 
-function doRequest(url:string) {
+function doRequest(url:string):Promise<any>{
     return new Promise(function (resolve, reject) {
       request(url, function (error, res, body) {
         if (!error && res.statusCode == 200) {
@@ -41,13 +41,9 @@ const getCategory = async (videoId:string)=>{
 }
 
 const toSong = async (res:any):Promise<Video>=>{
-    const obj:Video = {
-        name:res.snippet.title, // the name of the video
-        channelName:res.snippet.channelTitle,
-        youtubeId:res.id.videoId,
-        categoryNum:await getCategory(res.id.videoId)
-    }
-
+    const obj:Video = new Video(res.snippet.title, res.snippet.channelTitle,res.id.videoId
+        ,await getCategory(res.id.videoId))
+    
     return obj;
 }
 

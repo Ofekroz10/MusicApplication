@@ -1,12 +1,24 @@
 import { Document, Schema, model, Model } from 'mongoose'
 import {getCat} from '../../youtubeApi/youtube'
+import { Z_ASCII } from 'zlib';
 
 
-export interface Video{
+export class Video{
     name:string;
     channelName:string;
     youtubeId:string;
     categoryNum:number;
+
+   constructor(name:string,channelName:string,youtubeId:string, categoryNum:number){
+       this.name = name;
+       this.channelName = channelName;
+       this.youtubeId = youtubeId;
+       this.categoryNum = categoryNum;
+   }
+
+   equalsVid(other:Video){
+       return this.youtubeId === other.youtubeId;
+   }
 }
 
 const videoSchema = new Schema({
@@ -37,9 +49,6 @@ const videoSchema = new Schema({
     }
 })
 
-export interface SongDocument extends Document,Video {}
+export interface VideoDocument extends Document,Video {}
 
-export const Songs = model<SongDocument>('Video',videoSchema);
-
-
-
+export const Videos = model<VideoDocument>('Video',videoSchema);

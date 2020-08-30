@@ -9,9 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Songs = void 0;
+exports.Videos = exports.Video = void 0;
 const mongoose_1 = require("mongoose");
 const youtube_1 = require("../../youtubeApi/youtube");
+class Video {
+    constructor(name, channelName, youtubeId, categoryNum) {
+        this.name = name;
+        this.channelName = channelName;
+        this.youtubeId = youtubeId;
+        this.categoryNum = categoryNum;
+    }
+    equalsVid(other) {
+        return this.youtubeId === other.youtubeId;
+    }
+}
+exports.Video = Video;
 const videoSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -40,4 +52,4 @@ const videoSchema = new mongoose_1.Schema({
         }
     }
 });
-exports.Songs = mongoose_1.model('Video', videoSchema);
+exports.Videos = mongoose_1.model('Video', videoSchema);

@@ -52,7 +52,8 @@ export class User{
     password:string;
     credits:number;
     avatar:Buffer;
-    tokens:{token:string}[]
+    tokens:{token:string}[];
+    playLists:Schema.Types.ObjectId[];
 
     constructor({name,email,password}:IUserInput){
         this.name = name;
@@ -61,6 +62,7 @@ export class User{
         this.credits = 0;
         this.avatar = Buffer.from('');
         this.tokens = [];
+        this.playLists = [];
     }
 
     /* Only function that dont use _id can be here ... */
@@ -156,6 +158,13 @@ schema.pre('save', async function(this:UserDocument,next){
 
     next()
 })
+
+schema.virtual('playLists',{
+    ref: 'PlayList',
+    localField: '_id',
+    foreignField:'owner'
+})
+
 
 // for allowing use User & Document properties/methods, declare here method that use _id 
 export interface UserDocument extends User, Document {

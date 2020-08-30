@@ -24,6 +24,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCat = exports.getTupleCat = exports.serachByKeyword = void 0;
 const request = require("request");
+const video_1 = require("../mongodb/models/video");
+/*
+    This method make request to support async & await
+    by creating a promise for every request
+*/
 function doRequest(url) {
     return new Promise(function (resolve, reject) {
         request(url, function (error, res, body) {
@@ -42,12 +47,7 @@ const getCategory = (videoId) => __awaiter(void 0, void 0, void 0, function* () 
     return data.items[0].snippet.categoryId;
 });
 const toSong = (res) => __awaiter(void 0, void 0, void 0, function* () {
-    const obj = {
-        name: res.snippet.title,
-        channelName: res.snippet.channelTitle,
-        youtubeId: res.id.videoId,
-        categoryNum: yield getCategory(res.id.videoId)
-    };
+    const obj = new video_1.Video(res.snippet.title, res.snippet.channelTitle, res.id.videoId, yield getCategory(res.id.videoId));
     return obj;
 });
 exports.serachByKeyword = (keyword) => __awaiter(void 0, void 0, void 0, function* () {

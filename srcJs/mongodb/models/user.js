@@ -23,6 +23,7 @@ class User {
         this.credits = 0;
         this.avatar = Buffer.from('');
         this.tokens = [];
+        this.playLists = [];
     }
     /* Only function that dont use _id can be here ... */
     toResponse() {
@@ -106,6 +107,11 @@ schema.pre('save', function (next) {
         }
         next();
     });
+});
+schema.virtual('playLists', {
+    ref: 'PlayList',
+    localField: '_id',
+    foreignField: 'owner'
 });
 //now we can use User functions, because model will return UserDocument and not Document
 // and the schema is typeof IUserModel so static method of schema should be in IUserModel
