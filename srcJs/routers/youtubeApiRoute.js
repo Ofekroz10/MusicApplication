@@ -1,9 +1,4 @@
 "use strict";
-/*
-    This middleware put in req.user.playlists the current playlist accoridng to req.body.pName
-    (The name of the playlist), if pName dont exist in the playlist collection of the specific user
-    throw `Cannot find playlist: ${req.params.pName}`
-*/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -14,21 +9,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.playListGetByName = void 0;
-exports.playListGetByName = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.router = void 0;
+const express = require("express");
+const youtube_1 = require("../youtubeApi/youtube");
+exports.router = express.Router();
+exports.router.get('/search/:keyword', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield req.user.populate({
-            path: 'playLists',
-            match: {
-                name: req.params.pName
-            }
-        }).execPopulate();
-        const playList = req.user.playLists;
-        if (playList)
-            return next();
-        throw new Error(`Cannot find playlist: ${req.params.pName}`);
+        const data = yield youtube_1.serachByKeyword(req.params.keyword);
+        res.send(data);
     }
     catch (e) {
-        res.status(404).send({ error: e.message });
+        res.status(400).send({ error: e.message });
     }
-});
+}));
+exports.router.get('/categories', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield youtube_1.getTupleCat();
+        res.send(data);
+    }
+    catch (e) {
+        res.status(400).send({ error: e.message });
+    }
+}));

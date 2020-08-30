@@ -5,12 +5,14 @@ require('./mongodb/mongoose'); // for connect to mongodb
 const userRouter = require("./routers/userRoute");
 const videosRouter = require("./routers/videoRoute");
 const playListRouter = require("./routers/playListRoute");
+const youtubeRouter = require("./routers/youtubeApiRoute");
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.json()); //middleware for converting body to JSON
 app.use('/users', userRouter.router);
 app.use('/videos', videosRouter.router);
 app.use('/playList', playListRouter.router);
+app.use('/youtube', youtubeRouter.router);
 app.get('/', (req, res) => {
     res.send('Hi');
 });

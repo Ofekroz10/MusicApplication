@@ -10,6 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.playListUniqName = void 0;
+/*
+    This middleware check if req.body.name (the name of the new playlist) not in user's playlist
+    collection. It throws `name already exists` error.
+*/
 exports.playListUniqName = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield req.user.populate('playLists').execPopulate();
