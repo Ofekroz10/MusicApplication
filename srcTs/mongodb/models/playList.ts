@@ -15,7 +15,7 @@ import mongoose = require('mongoose')
     removeFromList- remove a video from playlist.
 
 */
-
+export const playListType:string[] = ['PlayList','CategoryPlayList'];
 export class PlayList{
     name:string;
     videos:Video[];
@@ -46,7 +46,7 @@ export class PlayList{
         if(dontContain)
             this.videos.push(video)
         else
-            throw new Error('video already in the playlist')
+            throw new Error(`video ${video.name} already in the playlist`)
     }
 
     removeFromList(yId:string):void{
@@ -56,7 +56,12 @@ export class PlayList{
 
 }
 
-const playListSchema = new Schema({
+export const basicPlayListOptions = {
+    discriminatorKey: 'itemtype',
+    collection:'PlayList'
+}
+
+export const playListSchema = new Schema({
     
     name:{
         type:String,
@@ -73,7 +78,9 @@ const playListSchema = new Schema({
     owner:{
         type:mongoose.Types.ObjectId
     }
-})
+},basicPlayListOptions);
+
+
 
 playListSchema.method('addToList',PlayList.prototype.addToList);
 playListSchema.method('removeFromList',PlayList.prototype.removeFromList);
@@ -81,5 +88,13 @@ playListSchema.method('shuffle',PlayList.prototype.shuffle);
 
 export interface IPlayListDocument extends Document, PlayList{}
 
-export const PlayLists = model<IPlayListDocument>('PlayList',playListSchema);
+/* Base model for extends it */ 
+export const basePlayList = mongoose.model<IPlayListDocument>('PlayListBase',playListSchema);
+
+
+const playListsModel = basePlayList.discriminator<IPlayListDocument>('PlayList',new mongoose.Schema({
+}));
+
+/* PlayLists model */
+export const playLists = model<IPlayListDocument>('PlayList');
 

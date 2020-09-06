@@ -160,7 +160,7 @@ schema.pre('save', async function(this:UserDocument,next){
 })
 
 schema.virtual('playLists',{
-    ref: 'PlayList',
+    ref: 'PlayListBase',
     localField: '_id',
     foreignField:'owner'
 })

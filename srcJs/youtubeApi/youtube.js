@@ -22,26 +22,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCat = exports.getTupleCat = exports.serachByKeyword = void 0;
+exports.getCat = exports.getTupleCat = exports.serachByKeyword = exports.doRequest = void 0;
 const request = require("request");
 const video_1 = require("../mongodb/models/video");
 /*
     This method make request to support async & await
     by creating a promise for every request
 */
-function doRequest(url) {
-    return new Promise(function (resolve, reject) {
-        request(url, function (error, res, body) {
-            if (!error && res.statusCode == 200) {
-                resolve(JSON.parse(body));
-            }
-            else {
-                console.log(res.statusCode);
-                reject(error);
-            }
+function doRequest(url, method = 'GET', body = {}, token = '') {
+    const headers = {
+        "Authorization": "Bearer " + token,
+        "Content-type": "application/json"
+    };
+    if (method !== 'GET') {
+        return new Promise(function (resolve, reject) {
+            console.log(body, method);
+            body = JSON.stringify(body);
+            request({ url: url, method: method, body: body, headers: headers }, function (error, res, body) {
+                if (!error && res.statusCode == 200) {
+                    resolve(JSON.parse(body));
+                }
+                else {
+                    reject(JSON.parse(res.body));
+                }
+            });
         });
-    });
+    }
+    else {
+        return new Promise(function (resolve, reject) {
+            request(url, function (error, res, body) {
+                if (!error && res.statusCode == 200) {
+                    resolve(JSON.parse(body));
+                }
+                else {
+                    reject(error);
+                }
+            });
+        });
+    }
 }
+exports.doRequest = doRequest;
 const getCategory = (videoId) => __awaiter(void 0, void 0, void 0, function* () {
     const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
     const data = yield doRequest(url);
@@ -52,15 +72,21 @@ const toSong = (res) => __awaiter(void 0, void 0, void 0, function* () {
     return obj;
 });
 exports.serachByKeyword = (keyword, limitation) => __awaiter(void 0, void 0, void 0, function* () {
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
-    let data = yield doRequest(url);
-    data = data.items.filter((x) => x.id.videoId);
-    let songs = [];
-    for (let song of data) {
-        const asSong = yield toSong(song);
-        songs.push(asSong);
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
+        let data = yield doRequest(url);
+        data = data.items.filter((x) => x.id.videoId);
+        let songs = [];
+        for (let song of data) {
+            const asSong = yield toSong(song);
+            songs.push(asSong);
+        }
+        return songs;
     }
-    return songs;
+    catch (e) {
+        console.log(e);
+        throw e;
+    }
 });
 exports.getTupleCat = () => __awaiter(void 0, void 0, void 0, function* () {
     const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg';

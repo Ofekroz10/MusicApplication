@@ -16,6 +16,8 @@ const playListUniqName_1 = require("../middleware/playListUniqName");
 const playListGetByName_1 = require("../middleware/playListGetByName");
 const video_1 = require("../mongodb/models/video");
 const playList_1 = require("../mongodb/models/playList");
+const youtube_1 = require("../youtubeApi/youtube");
+const helper_1 = require("../Helpers/helper");
 exports.router = express.Router();
 /*
     POST:
@@ -36,12 +38,31 @@ exports.router = express.Router();
 exports.router.post('/new', [auth_1.auth, playListUniqName_1.playListUniqName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = new playList_1.PlayList(req.user._id, req.body.name);
-        const data = yield playList_1.PlayLists.create(playList);
+        const data = yield playList_1.playLists.create(playList);
         yield data.save();
         res.send(data);
     }
     catch (e) {
-        res.status(400).send({ error: e.message });
+        res.status(400).send({ error: e });
+    }
+}));
+exports.router.get('/summery', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let result = {};
+        yield helper_1.asyncForEach(playList_1.playListType, (x) => __awaiter(void 0, void 0, void 0, function* () {
+            result[x] = 0;
+            yield req.user.populate({
+                path: 'playLists',
+                match: {
+                    itemtype: x
+                }
+            }).execPopulate();
+            result[x] = req.user.playLists.length;
+        }));
+        res.send(result);
+    }
+    catch (e) {
+        res.status(500).send(e);
     }
 }));
 exports.router.get('/:pName', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -61,7 +82,12 @@ exports.router.get('/:pName', [auth_1.auth, playListGetByName_1.playListGetByNam
 exports.router.get('/', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield req.user.populate('playLists').execPopulate();
-        res.send(req.user.playLists);
+        let results = req.user.playLists;
+        if (req.query.type) {
+            //@ts-ignore
+            results = req.user.playLists.filter((x) => x.itemtype === playList_1.playListType[req.query.type]);
+        }
+        res.send({ playLists: results });
     }
     catch (e) {
         res.status(404).send({ error: e.message });
@@ -93,6 +119,20 @@ exports.router.put('/:pName/addSome', [auth_1.auth, playListGetByName_1.playList
         res.status(404).send({ error: e.message });
     }
 }));
+exports.router.put('/:pName/youtube/:keyword', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let limitation = 25;
+        if (req.query.limit)
+            limitation = (+req.query.limit) + 1;
+        const results = yield youtube_1.serachByKeyword(req.query.keyword, limitation);
+        const pName = req.params.pName;
+        const data = yield youtube_1.doRequest(`http://localhost:3000/playList/${pName}/addSome`, 'PUT', results, req.token);
+        res.send(data);
+    }
+    catch (e) {
+        res.status(400).send(e);
+    }
+}));
 exports.router.delete('/:pName/delete', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = req.user.playLists[0];
@@ -108,11 +148,26 @@ exports.router.delete('/:pName/delete', [auth_1.auth, playListGetByName_1.playLi
 exports.router.delete('/:pName', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = req.user.playLists[0];
-        yield playList_1.PlayLists.deleteOne({ name: playList.name, owner: req.user._id });
+        yield playList_1.playLists.deleteOne({ name: playList.name, owner: req.user._id });
         yield req.user.populate('playLists').execPopulate();
         res.send(req.user.playLists);
     }
     catch (e) {
         res.status(404).send({ error: e.message });
+    }
+}));
+/* category playlist route */
+const categotyPlayList_1 = require("./../mongodb/models/categotyPlayList");
+exports.router.post('/newC', [auth_1.auth, playListUniqName_1.playListUniqName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const playList = new categotyPlayList_1.CategoryPlayList(req.user._id, req.body.name);
+        const catNum = req.body.category;
+        yield playList.setCategory(catNum);
+        const data = yield categotyPlayList_1.CPlayLists.create(playList);
+        yield data.save();
+        res.send(data);
+    }
+    catch (e) {
+        res.status(400).send({ error: e.message });
     }
 }));

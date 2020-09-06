@@ -20,17 +20,37 @@ import { Video } from '../mongodb/models/video';
     by creating a promise for every request
 */
 
-function doRequest(url:string):Promise<any>{
-    return new Promise(function (resolve, reject) {
-      request(url, function (error, res, body) {
-        if (!error && res.statusCode == 200) {
-          resolve(JSON.parse(body));
-        } else {
-            console.log(res.statusCode)
-          reject(error);
-        }
-      });
-    });
+export function doRequest(url:string,method='GET',body={},token=''):Promise<any>{
+    const headers ={
+        "Authorization": "Bearer "+token,
+        "Content-type": "application/json" 
+    }
+    
+    if(method !== 'GET'){
+        return new Promise(function (resolve, reject) {
+            console.log(body, method)
+            body = JSON.stringify(body);
+            request({url:url,method:method,body:body,headers:headers}, function (error, res, body) {
+            if (!error && res.statusCode == 200) {
+                resolve(JSON.parse(body));
+            } else {
+                reject(JSON.parse(res.body));
+            }
+            });
+        });
+
+    }
+    else{
+        return new Promise(function (resolve, reject) {
+            request(url, function (error, res, body) {
+              if (!error && res.statusCode == 200) {
+                resolve(JSON.parse(body));
+              } else {
+                reject(error);
+              }
+            });
+          });      
+    }
   }
   
 
@@ -50,15 +70,23 @@ const toSong = async (res:any):Promise<Video>=>{
 
 
 export const serachByKeyword = async (keyword:string,limitation:number)=>{
-    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
-    let data:any =await doRequest(url)
-    data = data.items.filter((x:any)=>x.id.videoId);
-    let songs:Video[] = [];
-    for(let song of data){
-        const asSong:Video = await toSong(song);
-        songs.push(asSong);
+    try{
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
+        let data:any =await doRequest(url)
+        data = data.items.filter((x:any)=>x.id.videoId);
+        let songs:Video[] = [];
+        for(let song of data){
+            const asSong:Video = await toSong(song);
+            songs.push(asSong);
+        }
+        return songs;
     }
-    return songs;
+    catch(e){
+        console.log(e)
+        throw e;
+    }
+    
+    
 
 }
 

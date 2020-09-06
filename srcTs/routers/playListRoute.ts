@@ -4,8 +4,9 @@ import {auth} from '../middleware/auth'
 import {playListUniqName} from '../middleware/playListUniqName' 
 import {playListGetByName} from '../middleware/playListGetByName' 
 import { Video, VideoDocument, Videos } from '../mongodb/models/video';
-import { PlayList,IPlayListDocument,PlayLists } from '../mongodb/models/playList';
-import { userInfo } from 'os';
+import { PlayList,IPlayListDocument,playLists,playListType } from '../mongodb/models/playList';
+import {serachByKeyword, doRequest} from '../youtubeApi/youtube'
+import {asyncForEach} from '../Helpers/helper'
 
 export const router = express.Router()
 
@@ -29,16 +30,35 @@ export const router = express.Router()
 router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
     try{
         const playList:PlayList = new PlayList(req.user._id,req.body.name);
-        const data:IPlayListDocument = await PlayLists.create(playList);
+        const data:IPlayListDocument = await playLists.create(playList);
         await data.save();
         res.send(data);
     }
     catch(e){
-        res.status(400).send({error: e.message})
+        res.status(400).send({error: e})
     }
 })
 
+router.get('/summery',auth,async(req:any,res)=>{
+    try{
+        let result:any = {};
+        await asyncForEach(playListType,async (x:string)=>{
+            result[x] = 0;
+            await req.user.populate({
+                path:'playLists',
+                match:{
+                    itemtype:x
+                }
+            }).execPopulate();
+            result[x] = req.user.playLists.length;
+        });
+        res.send(result);
 
+    }
+    catch(e){
+        res.status(500).send(e);
+    }
+})
 
 router.get('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
     try{
@@ -62,13 +82,19 @@ router.get('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
 router.get('/',auth,async(req:any,res)=>{
     try{
         await req.user.populate('playLists').execPopulate();
-        res.send(req.user.playLists);
-
+        let results = req.user.playLists;
+        if(req.query.type){
+            //@ts-ignore
+            results  = req.user.playLists.filter((x)=>x.itemtype === playListType[req.query.type]);
+        }
+        res.send({playLists: results});
     }
     catch(e){
         res.status(404).send({error:e.message});
     }
 })
+
+
 
 router.put('/:pName/add',[auth,playListGetByName],async(req:any,res:any)=>{
     try{
@@ -98,6 +124,25 @@ router.put('/:pName/addSome',[auth,playListGetByName],async(req:any,res:any)=>{
     }
 })
 
+router.put('/:pName/youtube/:keyword',[auth,playListGetByName],async(req:any,res:any)=>{
+    try{
+        let limitation = 25;
+        if(req.query.limit)
+            limitation = (+req.query.limit) +1;
+
+        const results = await serachByKeyword(req.query.keyword,limitation);
+        const pName = req.params.pName;
+        const data:Video[] = await doRequest(`http://localhost:3000/playList/${pName}/addSome`,'PUT'
+        ,results,req.token);
+        res.send(data);
+    }
+    catch(e){
+        res.status(400).send(e)
+    }
+})
+
+
+
 
 router.delete('/:pName/delete',[auth,playListGetByName],async(req:any,res:any)=>{
     try{
@@ -115,11 +160,30 @@ router.delete('/:pName/delete',[auth,playListGetByName],async(req:any,res:any)=>
 router.delete('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
     try{
         const playList:IPlayListDocument = req.user.playLists[0];
-        await PlayLists.deleteOne({name:playList.name, owner:req.user._id});
+        await playLists.deleteOne({name:playList.name, owner:req.user._id});
         await req.user.populate('playLists').execPopulate();
         res.send(req.user.playLists);
     }
     catch(e){
         res.status(404).send({error:e.message});
+    }
+})
+
+
+/* category playlist route */
+import {CPlayLists, CategoryPlayList, ICPlayListDocument} from './../mongodb/models/categotyPlayList'
+
+
+router.post('/newC',[auth,playListUniqName],async (req:any,res:any)=>{
+    try{
+        const playList:CategoryPlayList = new CategoryPlayList(req.user._id,req.body.name);
+        const catNum = req.body.category;
+        await playList.setCategory(catNum);
+        const data:ICPlayListDocument = await CPlayLists.create(playList);
+        await data.save();
+        res.send(data);
+    }
+    catch(e){
+        res.status(400).send({error: e.message})
     }
 })
