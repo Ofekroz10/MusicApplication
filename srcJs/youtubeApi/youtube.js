@@ -55,7 +55,7 @@ function doRequest(url, method = 'GET', body = {}, token = '') {
                     resolve(JSON.parse(body));
                 }
                 else {
-                    reject(error);
+                    reject(JSON.parse(res.body));
                 }
             });
         });
@@ -63,7 +63,7 @@ function doRequest(url, method = 'GET', body = {}, token = '') {
 }
 exports.doRequest = doRequest;
 const getCategory = (videoId) => __awaiter(void 0, void 0, void 0, function* () {
-    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=AIzaSyDuPHqMcc-PHrawcg8QnDFx1fTsU5nbMr4`;
     const data = yield doRequest(url);
     return data.items[0].snippet.categoryId;
 });
@@ -73,7 +73,7 @@ const toSong = (res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.serachByKeyword = (keyword, limitation) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyDuPHqMcc-PHrawcg8QnDFx1fTsU5nbMr4`;
         let data = yield doRequest(url);
         data = data.items.filter((x) => x.id.videoId);
         let songs = [];
@@ -89,7 +89,7 @@ exports.serachByKeyword = (keyword, limitation) => __awaiter(void 0, void 0, voi
     }
 });
 exports.getTupleCat = () => __awaiter(void 0, void 0, void 0, function* () {
-    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg';
+    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyDuPHqMcc-PHrawcg8QnDFx1fTsU5nbMr4';
     let data = yield doRequest(url);
     data = data.items.map((x) => {
         return [+x.id, x.snippet.title];
@@ -97,7 +97,7 @@ exports.getTupleCat = () => __awaiter(void 0, void 0, void 0, function* () {
     return data;
 });
 exports.getCat = () => __awaiter(void 0, void 0, void 0, function* () {
-    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg';
+    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyDuPHqMcc-PHrawcg8QnDFx1fTsU5nbMr4';
     let data = yield doRequest(url);
     data = data.items.map((x) => {
         return (+x.id);

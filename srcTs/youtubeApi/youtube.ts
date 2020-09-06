@@ -46,7 +46,7 @@ export function doRequest(url:string,method='GET',body={},token=''):Promise<any>
               if (!error && res.statusCode == 200) {
                 resolve(JSON.parse(body));
               } else {
-                reject(error);
+                reject(JSON.parse(res.body));
               }
             });
           });      
@@ -55,7 +55,7 @@ export function doRequest(url:string,method='GET',body={},token=''):Promise<any>
   
 
 const getCategory = async (videoId:string)=>{
-    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=AIzaSyDuPHqMcc-PHrawcg8QnDFx1fTsU5nbMr4`
     const data:any = await doRequest(url);
     return data.items[0].snippet.categoryId;
 
@@ -71,7 +71,7 @@ const toSong = async (res:any):Promise<Video>=>{
 
 export const serachByKeyword = async (keyword:string,limitation:number)=>{
     try{
-        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg`;
+        const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=${limitation}&q=${keyword}&key=AIzaSyDuPHqMcc-PHrawcg8QnDFx1fTsU5nbMr4`;
         let data:any =await doRequest(url)
         data = data.items.filter((x:any)=>x.id.videoId);
         let songs:Video[] = [];
@@ -91,7 +91,7 @@ export const serachByKeyword = async (keyword:string,limitation:number)=>{
 }
 
 export const getTupleCat = async():Promise<[number,string]>=>{
-    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg'
+    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyDuPHqMcc-PHrawcg8QnDFx1fTsU5nbMr4'
     let data:any = await doRequest(url);
     data = data.items.map((x:any):[number,string]=>{
         return [+x.id,x.snippet.title]
@@ -100,7 +100,7 @@ export const getTupleCat = async():Promise<[number,string]>=>{
 }
 
 export const getCat = async():Promise<number[]>=>{
-    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBLmP5O47FByLNCmZrnrdfd5A-Sbaer_lg'
+    const url = 'https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyDuPHqMcc-PHrawcg8QnDFx1fTsU5nbMr4'
     let data:any = await doRequest(url);
     data = data.items.map((x:any):number=>{
         return (+x.id);

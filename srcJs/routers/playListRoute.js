@@ -46,7 +46,7 @@ exports.router.post('/new', [auth_1.auth, playListUniqName_1.playListUniqName], 
         res.status(400).send({ error: e });
     }
 }));
-exports.router.get('/summery', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.router.get('/summary', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let result = {};
         yield helper_1.asyncForEach(playList_1.playListType, (x) => __awaiter(void 0, void 0, void 0, function* () {
@@ -124,7 +124,7 @@ exports.router.put('/:pName/youtube/:keyword', [auth_1.auth, playListGetByName_1
         let limitation = 25;
         if (req.query.limit)
             limitation = (+req.query.limit) + 1;
-        const results = yield youtube_1.serachByKeyword(req.query.keyword, limitation);
+        const results = yield youtube_1.serachByKeyword(req.params.keyword, limitation);
         const pName = req.params.pName;
         const data = yield youtube_1.doRequest(`http://localhost:3000/playList/${pName}/addSome`, 'PUT', results, req.token);
         res.send(data);

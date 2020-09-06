@@ -39,7 +39,7 @@ router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
     }
 })
 
-router.get('/summery',auth,async(req:any,res)=>{
+router.get('/summary',auth,async(req:any,res)=>{
     try{
         let result:any = {};
         await asyncForEach(playListType,async (x:string)=>{
@@ -130,7 +130,7 @@ router.put('/:pName/youtube/:keyword',[auth,playListGetByName],async(req:any,res
         if(req.query.limit)
             limitation = (+req.query.limit) +1;
 
-        const results = await serachByKeyword(req.query.keyword,limitation);
+        const results = await serachByKeyword(req.params.keyword,limitation);
         const pName = req.params.pName;
         const data:Video[] = await doRequest(`http://localhost:3000/playList/${pName}/addSome`,'PUT'
         ,results,req.token);
