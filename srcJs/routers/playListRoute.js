@@ -46,6 +46,24 @@ exports.router.post('/new', [auth_1.auth, playListUniqName_1.playListUniqName], 
         res.status(400).send({ error: e });
     }
 }));
+exports.router.get('/summaryPretty', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let options = {
+            map: function () {
+                emit(this.itemtype, this);
+            },
+            reduce: function (key, values) {
+                return { count: values.length, Playlists: values };
+            },
+            query: { owner: req.user._id }
+        };
+        const results = yield playList_1.playLists.mapReduce(options);
+        res.send(results);
+    }
+    catch (e) {
+        res.status(500).send(e);
+    }
+}));
 exports.router.get('/summary', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let result = {};

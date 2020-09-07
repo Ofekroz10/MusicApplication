@@ -7,8 +7,10 @@ import { Video, VideoDocument, Videos } from '../mongodb/models/video';
 import { PlayList,IPlayListDocument,playLists,playListType } from '../mongodb/models/playList';
 import {serachByKeyword, doRequest} from '../youtubeApi/youtube'
 import {asyncForEach} from '../Helpers/helper'
+import mongoose = require('mongoose')
 
 export const router = express.Router()
+declare function emit(k:any, v:any):any;  
 
 /*
     POST:
@@ -36,6 +38,31 @@ router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
     }
     catch(e){
         res.status(400).send({error: e})
+    }
+})
+  
+router.get('/summaryPretty',auth,async(req:any,res)=>{
+
+    try{
+
+        let options: mongoose.ModelMapReduceOption<PlayList, string, {count:number, Playlists: PlayList[]}> = {
+            map: function (this:{itemtype:string}) {
+                emit(this.itemtype,this);
+            },
+            reduce: function (key, values){
+                return {count:values.length, Playlists: values};
+            },
+            query: {owner:req.user._id}
+
+        };
+
+        const results = await playLists.mapReduce(options);
+        res.send(results);
+
+
+    }
+    catch(e){
+        res.status(500).send(e);
     }
 })
 
@@ -172,6 +199,8 @@ router.delete('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
 
 /* category playlist route */
 import {CPlayLists, CategoryPlayList, ICPlayListDocument} from './../mongodb/models/categotyPlayList'
+import { Mongoose } from 'mongoose';
+import request = require('request');
 
 
 router.post('/newC',[auth,playListUniqName],async (req:any,res:any)=>{
@@ -187,3 +216,4 @@ router.post('/newC',[auth,playListUniqName],async (req:any,res:any)=>{
         res.status(400).send({error: e.message})
     }
 })
+
