@@ -4,7 +4,7 @@ PlayTube suggests amazing features:
 - Creating playlists from keywords.
 - Creating playlists by category.
 - Shuffling the playlist's videos.
-- Statistics data about your playlists.
+- Statistical data about your playlists.
 - And more...   
 ```diff
 + PlayTube includes only the server-side of the application
