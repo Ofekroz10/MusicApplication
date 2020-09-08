@@ -33,7 +33,7 @@ router.get('/me',auth,(req:any,res)=>{
 })
 
 router.get('/credits',auth,async (req:any,res)=>{
-    const data = await Users.find({}, limitedUser,{sort:{credits:1}}); // sort by credits
+    const data = await Users.find({}, limitedUser,{sort:{credits:1},limit:10}); // sort by credits
     res.send(data);
 })
 

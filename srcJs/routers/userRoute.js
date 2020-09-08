@@ -39,7 +39,7 @@ exports.router.get('/me', auth_1.auth, (req, res) => {
     res.send(req.user.toResponse());
 });
 exports.router.get('/credits', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield user_1.Users.find({}, user_1.limitedUser, { sort: { credits: 1 } }); // sort by credits
+    const data = yield user_1.Users.find({}, user_1.limitedUser, { sort: { credits: 1 }, limit: 10 }); // sort by credits
     res.send(data);
 }));
 exports.router.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
