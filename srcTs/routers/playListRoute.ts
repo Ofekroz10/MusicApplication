@@ -8,7 +8,9 @@ import { PlayList,IPlayListDocument,playLists,playListType, playListSchema, base
 import {serachByKeyword, doRequest, getCredits} from '../youtubeApi/youtube'
 import {CPlayLists, CategoryPlayList, ICPlayListDocument} from './../mongodb/models/categotyPlayList'
 import {asyncForEach} from '../Helpers/helper'
+import {credits} from '../middleware/credits'
 import mongoose = require('mongoose')
+import {checkAndSendEmail} from '../email/sendEmail'
 
 export const router = express.Router()
 declare function emit(k:any, v:any):any;  
@@ -49,7 +51,7 @@ router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
     catch(e){
         res.status(400).send({error: e})
     }
-})
+},checkAndSendEmail)
 
 router.get('/categorySummary',auth,async(req:any,res)=>{
     try{
@@ -154,7 +156,7 @@ router.get('/',auth,async(req:any,res)=>{
 
 
 
-router.put('/:pName/add',[auth,playListGetByName],async(req:any,res:any)=>{
+router.put('/:pName/add',[auth,playListGetByName,credits],async(req:any,res:any,next:()=>void)=>{
     try{
         const playList:IPlayListDocument = req.user.playLists[0];
         const video = new Video(req.body.name,req.body.channelName,req.body.youtubeId,req.body.categoryNum);
@@ -163,13 +165,14 @@ router.put('/:pName/add',[auth,playListGetByName],async(req:any,res:any)=>{
         req.user.credits += Video.getCredits();
         await req.user.save();
         res.send(playList.videos); 
+        next();
     }
     catch(e){
         res.status(404).send({error:e.message});
     }
-})
+},checkAndSendEmail)
 
-router.put('/:pName/addSome',[auth,playListGetByName],async(req:any,res:any)=>{
+router.put('/:pName/addSome',[auth,playListGetByName,credits],async(req:any,res:any,next:()=>void)=>{
     try{
         const playList:IPlayListDocument = req.user.playLists[0];
         const count = req.body.length;
@@ -180,13 +183,14 @@ router.put('/:pName/addSome',[auth,playListGetByName],async(req:any,res:any)=>{
         await playList.save();
         req.user.credits += count * Video.getCredits();
         res.send(playList.videos); 
+        next();
     }
     catch(e){
         res.status(404).send({error:e.message});
     }
-})
+},checkAndSendEmail)
 
-router.put('/:pName/youtube/:keyword',[auth,playListGetByName],async(req:any,res:any)=>{
+router.put('/:pName/youtube/:keyword',[auth,playListGetByName,credits],async(req:any,res:any,next:()=>void)=>{
     try{
         let limitation = 25;
         if(req.query.limit)
@@ -199,11 +203,12 @@ router.put('/:pName/youtube/:keyword',[auth,playListGetByName],async(req:any,res
         req.user.credits+= getCredits(limitation);
         await req.user.save();
         res.send(data);
+        next();
     }
     catch(e){
         res.status(400).send(e)
     }
-})
+},checkAndSendEmail)
 
 
 
@@ -242,9 +247,10 @@ router.delete('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
 /* category playlist route */
 import { Mongoose } from 'mongoose';
 import request = require('request');
+import { sendCreditsEmail } from '../email/email';
 
 
-router.post('/newC',[auth,playListUniqName],async (req:any,res:any)=>{
+router.post('/newC',[auth,playListUniqName,credits],async (req:any,res:any,next:()=>void)=>{
     try{
         const playList:CategoryPlayList = new CategoryPlayList(req.user._id,req.body.name);
         const catNum = req.body.category;
@@ -254,11 +260,12 @@ router.post('/newC',[auth,playListUniqName],async (req:any,res:any)=>{
         req.user.credits += CategoryPlayList.getCredits();
         await req.user.save();
         res.send(data);
+        next();
     }
     catch(e){
         res.status(400).send({error: e.message})
     }
-})
+},checkAndSendEmail)
 
 
 

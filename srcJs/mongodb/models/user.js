@@ -36,6 +36,7 @@ class User {
     }
 }
 exports.User = User;
+User.CreaditsToEmail = 10;
 const schema = new mongoose_1.Schema({
     name: {
         type: String,

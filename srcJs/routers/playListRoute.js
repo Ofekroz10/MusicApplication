@@ -19,16 +19,25 @@ const playList_1 = require("../mongodb/models/playList");
 const youtube_1 = require("../youtubeApi/youtube");
 const categotyPlayList_1 = require("./../mongodb/models/categotyPlayList");
 const helper_1 = require("../Helpers/helper");
+const credits_1 = require("../middleware/credits");
+const sendEmail_1 = require("../email/sendEmail");
 exports.router = express.Router();
 /*
     POST:
     /new - Create new playlist according to the user
+    /newC - Create new category playlist according to the user
 
     GET:
     /:pName - Return the playlist by pName(playlist name)
     / - Return all the playlists of the specific user
+    /categorySummary - Return the category playlists of the user group by category number
+    /extendedSummary - Return all the playlists of the user group by playlist type.
+    /summary - Return the count of playlists for each playlist type.
+
 
     PUT:
+    /:pName/youtube/:keyword?limit=x - Add videos from youtube search results of the keyword. limit = x
+    where x is the number of the search results.
     /:pName/add - Add a video to a specific playlist
     /:pName/addSome - Add array of videos to specific playlist
 
@@ -48,7 +57,7 @@ exports.router.post('/new', [auth_1.auth, playListUniqName_1.playListUniqName], 
     catch (e) {
         res.status(400).send({ error: e });
     }
-}));
+}), sendEmail_1.checkAndSendEmail);
 exports.router.get('/categorySummary', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let options = {
@@ -132,7 +141,7 @@ exports.router.get('/', auth_1.auth, (req, res) => __awaiter(void 0, void 0, voi
         res.status(404).send({ error: e.message });
     }
 }));
-exports.router.put('/:pName/add', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.router.put('/:pName/add', [auth_1.auth, playListGetByName_1.playListGetByName, credits_1.credits], (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = req.user.playLists[0];
         const video = new video_1.Video(req.body.name, req.body.channelName, req.body.youtubeId, req.body.categoryNum);
@@ -141,12 +150,13 @@ exports.router.put('/:pName/add', [auth_1.auth, playListGetByName_1.playListGetB
         req.user.credits += video_1.Video.getCredits();
         yield req.user.save();
         res.send(playList.videos);
+        next();
     }
     catch (e) {
         res.status(404).send({ error: e.message });
     }
-}));
-exports.router.put('/:pName/addSome', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+}), sendEmail_1.checkAndSendEmail);
+exports.router.put('/:pName/addSome', [auth_1.auth, playListGetByName_1.playListGetByName, credits_1.credits], (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = req.user.playLists[0];
         const count = req.body.length;
@@ -157,12 +167,13 @@ exports.router.put('/:pName/addSome', [auth_1.auth, playListGetByName_1.playList
         yield playList.save();
         req.user.credits += count * video_1.Video.getCredits();
         res.send(playList.videos);
+        next();
     }
     catch (e) {
         res.status(404).send({ error: e.message });
     }
-}));
-exports.router.put('/:pName/youtube/:keyword', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+}), sendEmail_1.checkAndSendEmail);
+exports.router.put('/:pName/youtube/:keyword', [auth_1.auth, playListGetByName_1.playListGetByName, credits_1.credits], (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let limitation = 25;
         if (req.query.limit)
@@ -173,11 +184,12 @@ exports.router.put('/:pName/youtube/:keyword', [auth_1.auth, playListGetByName_1
         req.user.credits += youtube_1.getCredits(limitation);
         yield req.user.save();
         res.send(data);
+        next();
     }
     catch (e) {
         res.status(400).send(e);
     }
-}));
+}), sendEmail_1.checkAndSendEmail);
 exports.router.delete('/:pName/delete', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = req.user.playLists[0];
@@ -206,7 +218,7 @@ exports.router.delete('/:pName', [auth_1.auth, playListGetByName_1.playListGetBy
         res.status(404).send({ error: e.message });
     }
 }));
-exports.router.post('/newC', [auth_1.auth, playListUniqName_1.playListUniqName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.router.post('/newC', [auth_1.auth, playListUniqName_1.playListUniqName, credits_1.credits], (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = new categotyPlayList_1.CategoryPlayList(req.user._id, req.body.name);
         const catNum = req.body.category;
@@ -216,8 +228,9 @@ exports.router.post('/newC', [auth_1.auth, playListUniqName_1.playListUniqName],
         req.user.credits += categotyPlayList_1.CategoryPlayList.getCredits();
         yield req.user.save();
         res.send(data);
+        next();
     }
     catch (e) {
         res.status(400).send({ error: e.message });
     }
-}));
+}), sendEmail_1.checkAndSendEmail);
