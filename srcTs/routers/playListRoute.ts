@@ -16,12 +16,19 @@ declare function emit(k:any, v:any):any;
 /*
     POST:
     /new - Create new playlist according to the user
+    /newC - Create new category playlist according to the user
 
     GET:
     /:pName - Return the playlist by pName(playlist name)
     / - Return all the playlists of the specific user
+    /categorySummary - Return the category playlists of the user group by category number
+    /extendedSummary - Return all the playlists of the user group by playlist type.
+    /summary - Return the count of playlists for each playlist type.
+
 
     PUT:
+    /:pName/youtube/:keyword?limit=x - Add videos from youtube search results of the keyword. limit = x
+    where x is the number of the search results.
     /:pName/add - Add a video to a specific playlist
     /:pName/addSome - Add array of videos to specific playlist
 
