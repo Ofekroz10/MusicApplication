@@ -4,7 +4,7 @@ PlayTube suggests amazing features:
 - Creating playlists from keywords.
 - Creating playlists by category.
 - Shuffling the playlist's videos.
-- Statistics data about your playlists.
+- Statistical data about your playlists.
 - And more...   
 ```diff
 + PlayTube includes only the server-side of the application
@@ -197,6 +197,192 @@ Result:
 {
     "PlayList": 3,
     "CategoryPlayList": 3
+}
+```
+    
+If you want more detailed summery use: (This request implemented by MapReduce function)
+```js
+[GET] http://localhost:3000/playList/extendedSummary 
+```  
+   
+Results:
+```js
+{
+    "results": [
+        {
+            "_id": "CategoryPlayList",
+            "value": {
+                "count": 2,
+                "Playlists": [
+                    {
+                        "_id": "5f5568601e4a733f3c8cc4a4",
+                        "itemtype": "CategoryPlayList",
+                        "owner": "5f452451fc62181b80de92d3",
+                        "videos": [],
+                        "name": "my movies",
+                        "category": 20,
+                        "__v": 0
+                    },
+                    {
+                        "_id": "5f54dc04e427cb398c54d68e",
+                        "itemtype": "CategoryPlayList",
+                        "owner": "5f452451fc62181b80de92d3",
+                        "videos": [
+                            {
+                                "_id": "5f54dd1de427cb398c54d690",
+                                "name": "my song",
+                                "channelName": "my channelName",
+                                "youtubeId": "123234df",
+                                "categoryNum": 2
+                            }
+                        ],
+                        "name": "1",
+                        "category": 1,
+                        "__v": 1
+                    }
+                ]
+            }
+        },
+        {
+            "_id": "PlayList",
+            "value": {
+                "count": 2,
+                "Playlists": [
+                    {
+                        "_id": "5f55631fb4d6af1ab0a03da0",
+                        "itemtype": "PlayList",
+                        "owner": "5f452451fc62181b80de92d3",
+                        "videos": [
+                            {
+                                "_id": "5f556367b4d6af1ab0a03da1",
+                                "name": "Dennis Lloyd - Alien (Live at Mitzpe Ramon)",
+                                "channelName": "DennisLloydVEVO",
+                                "youtubeId": "tyHdtifvQz8",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f556367b4d6af1ab0a03da2",
+                                "name": "Dennis Lloyd - Alien (Official Audio)",
+                                "channelName": "DennisLloydVEVO",
+                                "youtubeId": "whbidPR4nVA",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f556367b4d6af1ab0a03da3",
+                                "name": "Dennis Lloyd – Alien (Official Video)",
+                                "channelName": "Dennis Lloyd",
+                                "youtubeId": "MOGKJdwVkIQ",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f556367b4d6af1ab0a03da4",
+                                "name": "Dennis Lloyd - GFY (Official Video)",
+                                "channelName": "DennisLloydVEVO",
+                                "youtubeId": "CIqiB9zSLmM",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f556367b4d6af1ab0a03da5",
+                                "name": "Dennis Lloyd - Unfaithful (Official Video)",
+                                "channelName": "DennisLloydVEVO",
+                                "youtubeId": "ehiNCZSvGzk",
+                                "categoryNum": 10
+                            }
+                        ],
+                        "name": "Dennis Lloyd list",
+                        "__v": 1
+                    },
+                    {
+                        "_id": "5f55575c7b7cf118ccfbe726",
+                        "itemtype": "PlayList",
+                        "owner": "5f452451fc62181b80de92d3",
+                        "videos": [
+                            {
+                                "_id": "5f555a167b7cf118ccfbe727",
+                                "name": "Undefined x Elegant Speech x Tip C  -  So Long prod KATO",
+                                "channelName": "Undefined",
+                                "youtubeId": "yp9Z9e6ZIs4",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f555a167b7cf118ccfbe728",
+                                "name": "Undefined",
+                                "channelName": "Jeremy Passion - Topic",
+                                "youtubeId": "zRgfWSittxM",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f555a167b7cf118ccfbe729",
+                                "name": "Undefined",
+                                "channelName": "As I Lay Dying - Topic",
+                                "youtubeId": "BqZbOcj7QxU",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f555a167b7cf118ccfbe72a",
+                                "name": "Undefined",
+                                "channelName": "Timotainment",
+                                "youtubeId": "8FOrfPpnhFI",
+                                "categoryNum": 23
+                            },
+                            {
+                                "_id": "5f555a167b7cf118ccfbe72b",
+                                "name": "Undefined - Episode 1",
+                                "channelName": "WallStreet Entertainment",
+                                "youtubeId": "jbnddQ9l0IA",
+                                "categoryNum": 1
+                            },
+                            {
+                                "_id": "5f555a167b7cf118ccfbe72c",
+                                "name": "Strongman - Undefined",
+                                "channelName": "Strongman Burner",
+                                "youtubeId": "O0Xwl15bK10",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f5562d8b4d6af1ab0a03d9b",
+                                "name": "Dennis Lloyd - Alien (Live at Mitzpe Ramon)",
+                                "channelName": "DennisLloydVEVO",
+                                "youtubeId": "tyHdtifvQz8",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f5562d8b4d6af1ab0a03d9c",
+                                "name": "Dennis Lloyd - Alien (Official Audio)",
+                                "channelName": "DennisLloydVEVO",
+                                "youtubeId": "whbidPR4nVA",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f5562d8b4d6af1ab0a03d9d",
+                                "name": "Dennis Lloyd – Alien (Official Video)",
+                                "channelName": "Dennis Lloyd",
+                                "youtubeId": "MOGKJdwVkIQ",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f5562d8b4d6af1ab0a03d9e",
+                                "name": "Dennis Lloyd - GFY (Official Video)",
+                                "channelName": "DennisLloydVEVO",
+                                "youtubeId": "CIqiB9zSLmM",
+                                "categoryNum": 10
+                            },
+                            {
+                                "_id": "5f5562d8b4d6af1ab0a03d9f",
+                                "name": "Dennis Lloyd - Unfaithful (Official Video)",
+                                "channelName": "DennisLloydVEVO",
+                                "youtubeId": "ehiNCZSvGzk",
+                                "categoryNum": 10
+                            }
+                        ],
+                        "name": "Dennis Lloyd playlist",
+                        "__v": 2
+                    }
+                ]
+            }
+        }
+    ],
+    "stats": {}
 }
 ```
 
