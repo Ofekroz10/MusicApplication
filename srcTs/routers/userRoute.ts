@@ -1,5 +1,5 @@
 import express = require('express');
-import { User, Users, UserDocument, IUserLogin } from '../mongodb/models/user';
+import { User, Users, UserDocument, IUserLogin,limitedUser } from '../mongodb/models/user';
 import {auth} from '../middleware/auth'
 import { upload } from '../mongodb/multerSettings'
 
@@ -31,6 +31,12 @@ export const router = express.Router()
 router.get('/me',auth,(req:any,res)=>{
     res.send(req.user.toResponse());
 })
+
+router.get('/credits',auth,async (req:any,res)=>{
+    const data = await Users.find({}, limitedUser,{sort:{credits:1}}); // sort by credits
+    res.send(data);
+})
+
 
 router.post('/login',async(req,res)=>{
     try{

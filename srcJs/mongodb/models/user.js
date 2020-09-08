@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Users = exports.User = void 0;
+exports.Users = exports.limitedUser = exports.User = void 0;
 const mongoose_1 = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
@@ -76,6 +76,12 @@ const schema = new mongoose_1.Schema({
             }
         }]
 });
+exports.limitedUser = {
+    avatar: false,
+    tokens: false,
+    password: false,
+    __v: false
+};
 // register the user method 'toResponse'
 schema.method('toResponse', User.prototype.toResponse);
 // implemention of method from UserDocument, typeof this here is UserDocumnet

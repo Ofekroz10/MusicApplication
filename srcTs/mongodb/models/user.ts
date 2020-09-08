@@ -125,6 +125,13 @@ const schema = new Schema({
     }]
 })
 
+export const limitedUser = {
+    avatar:false,
+    tokens:false,
+    password:false,
+    __v:false
+}
+
 // register the user method 'toResponse'
 schema.method('toResponse',User.prototype.toResponse)
 
