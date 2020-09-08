@@ -24,6 +24,7 @@ PlayTube suggests amazing features:
 + Jsonwebtoken
 + Request
 + Validator
++ Sendgrid/mail
 
 # User system
 ```diff
@@ -594,6 +595,8 @@ Get the top 10 users according to there credits:
 ```js
 [GET] http://localhost:3000/users/credits
 ```
+   
+**When a user achieves 1000 credits, he gets an email.**
 
 ```diff
 - PlayTube can do more actions, explore more functions in the project ! 
