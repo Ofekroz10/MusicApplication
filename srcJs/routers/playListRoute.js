@@ -17,6 +17,7 @@ const playListGetByName_1 = require("../middleware/playListGetByName");
 const video_1 = require("../mongodb/models/video");
 const playList_1 = require("../mongodb/models/playList");
 const youtube_1 = require("../youtubeApi/youtube");
+const categotyPlayList_1 = require("./../mongodb/models/categotyPlayList");
 const helper_1 = require("../Helpers/helper");
 exports.router = express.Router();
 /*
@@ -46,6 +47,24 @@ exports.router.post('/new', [auth_1.auth, playListUniqName_1.playListUniqName], 
     }
     catch (e) {
         res.status(400).send({ error: e });
+    }
+}));
+exports.router.get('/categorySummary', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let options = {
+            map: function () {
+                emit(this.category, this);
+            },
+            reduce: function (key, values) {
+                return { Category: key, count: values.length, Playlists: values };
+            },
+            query: { owner: req.user._id, itemtype: 'CategoryPlayList' }
+        };
+        const results = yield playList_1.basePlayList.mapReduce(options);
+        res.send(results);
+    }
+    catch (e) {
+        res.status(500).send({ error: e.message });
     }
 }));
 exports.router.get('/extendedSummary', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -187,8 +206,6 @@ exports.router.delete('/:pName', [auth_1.auth, playListGetByName_1.playListGetBy
         res.status(404).send({ error: e.message });
     }
 }));
-/* category playlist route */
-const categotyPlayList_1 = require("./../mongodb/models/categotyPlayList");
 exports.router.post('/newC', [auth_1.auth, playListUniqName_1.playListUniqName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = new categotyPlayList_1.CategoryPlayList(req.user._id, req.body.name);

@@ -4,8 +4,9 @@ import {auth} from '../middleware/auth'
 import {playListUniqName} from '../middleware/playListUniqName' 
 import {playListGetByName} from '../middleware/playListGetByName' 
 import { Video, VideoDocument, Videos } from '../mongodb/models/video';
-import { PlayList,IPlayListDocument,playLists,playListType, playListSchema } from '../mongodb/models/playList';
+import { PlayList,IPlayListDocument,playLists,playListType, playListSchema, basePlayList } from '../mongodb/models/playList';
 import {serachByKeyword, doRequest, getCredits} from '../youtubeApi/youtube'
+import {CPlayLists, CategoryPlayList, ICPlayListDocument} from './../mongodb/models/categotyPlayList'
 import {asyncForEach} from '../Helpers/helper'
 import mongoose = require('mongoose')
 
@@ -42,7 +43,28 @@ router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
         res.status(400).send({error: e})
     }
 })
-  
+
+router.get('/categorySummary',auth,async(req:any,res)=>{
+    try{
+        let options: mongoose.ModelMapReduceOption<PlayList, number, {Category:number, count:number, Playlists: PlayList[]}> = {
+            map: function (this:{category:number}) {
+                emit(this.category,this);
+            },
+            reduce: function (key, values){
+                return {Category:key, count:values.length, Playlists: values};
+            },
+            query: {owner:req.user._id,itemtype:'CategoryPlayList'}
+
+        };
+
+        const results = await basePlayList.mapReduce(options);
+        res.send(results);
+    }
+    catch(e){
+        res.status(500).send({error:e.message});
+    }
+})
+
 router.get('/extendedSummary',auth,async(req:any,res)=>{
 
     try{
@@ -211,7 +233,6 @@ router.delete('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
 
 
 /* category playlist route */
-import {CPlayLists, CategoryPlayList, ICPlayListDocument} from './../mongodb/models/categotyPlayList'
 import { Mongoose } from 'mongoose';
 import request = require('request');
 
@@ -231,5 +252,6 @@ router.post('/newC',[auth,playListUniqName],async (req:any,res:any)=>{
         res.status(400).send({error: e.message})
     }
 })
+
 
 
