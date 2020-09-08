@@ -36,7 +36,7 @@ class User {
     }
 }
 exports.User = User;
-User.CreaditsToEmail = 10;
+User.CreaditsToEmail = 1000;
 const schema = new mongoose_1.Schema({
     name: {
         type: String,

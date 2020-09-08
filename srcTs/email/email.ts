@@ -2,7 +2,7 @@ import { User } from "../mongodb/models/user";
 
 const sgMail = require('@sendgrid/mail');
 
-const key = '';
+const key = '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';
 
 sgMail.setApiKey(key);
 

@@ -54,7 +54,7 @@ export class User{
     avatar:Buffer;
     tokens:{token:string}[];
     playLists:Schema.Types.ObjectId[];
-    public static readonly CreaditsToEmail = 10;
+    public static readonly CreaditsToEmail = 1000;
 
     constructor({name,email,password}:IUserInput){
         this.name = name;
