@@ -20,6 +20,8 @@ import { Video } from '../mongodb/models/video';
     by creating a promise for every request
 */
 
+export const getCredits = (numOfVideo:number)=> Video.getCredits()*0.5 * numOfVideo;
+
 export function doRequest(url:string,method='GET',body={},token=''):Promise<any>{
     const headers ={
         "Authorization": "Bearer "+token,

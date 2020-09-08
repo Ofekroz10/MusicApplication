@@ -40,13 +40,15 @@ exports.router.post('/new', [auth_1.auth, playListUniqName_1.playListUniqName], 
         const playList = new playList_1.PlayList(req.user._id, req.body.name);
         const data = yield playList_1.playLists.create(playList);
         yield data.save();
+        req.user.credits += playList_1.PlayList.getCredits();
+        yield req.user.save();
         res.send(data);
     }
     catch (e) {
         res.status(400).send({ error: e });
     }
 }));
-exports.router.get('/summaryPretty', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.router.get('/extendedSummary', auth_1.auth, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let options = {
             map: function () {
@@ -117,6 +119,8 @@ exports.router.put('/:pName/add', [auth_1.auth, playListGetByName_1.playListGetB
         const video = new video_1.Video(req.body.name, req.body.channelName, req.body.youtubeId, req.body.categoryNum);
         playList.addToList(video);
         yield playList.save();
+        req.user.credits += video_1.Video.getCredits();
+        yield req.user.save();
         res.send(playList.videos);
     }
     catch (e) {
@@ -126,11 +130,13 @@ exports.router.put('/:pName/add', [auth_1.auth, playListGetByName_1.playListGetB
 exports.router.put('/:pName/addSome', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = req.user.playLists[0];
+        const count = req.body.length;
         req.body.forEach((x) => {
             const video = new video_1.Video(x.name, x.channelName, x.youtubeId, x.categoryNum);
             playList.addToList(video);
         });
         yield playList.save();
+        req.user.credits += count * video_1.Video.getCredits();
         res.send(playList.videos);
     }
     catch (e) {
@@ -145,6 +151,8 @@ exports.router.put('/:pName/youtube/:keyword', [auth_1.auth, playListGetByName_1
         const results = yield youtube_1.serachByKeyword(req.params.keyword, limitation);
         const pName = req.params.pName;
         const data = yield youtube_1.doRequest(`http://localhost:3000/playList/${pName}/addSome`, 'PUT', results, req.token);
+        req.user.credits += youtube_1.getCredits(limitation);
+        yield req.user.save();
         res.send(data);
     }
     catch (e) {
@@ -157,6 +165,8 @@ exports.router.delete('/:pName/delete', [auth_1.auth, playListGetByName_1.playLi
         const yId = req.body.yId;
         playList.removeFromList(yId);
         yield playList.save();
+        req.user.credits -= video_1.Video.getCredits();
+        yield req.user.save();
         res.send(playList.videos);
     }
     catch (e) {
@@ -166,8 +176,11 @@ exports.router.delete('/:pName/delete', [auth_1.auth, playListGetByName_1.playLi
 exports.router.delete('/:pName', [auth_1.auth, playListGetByName_1.playListGetByName], (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const playList = req.user.playLists[0];
+        const count = playList.videos.length;
         yield playList_1.playLists.deleteOne({ name: playList.name, owner: req.user._id });
         yield req.user.populate('playLists').execPopulate();
+        req.user.credits -= (count * video_1.Video.getCredits()) + (playList.getCredits());
+        yield req.user.save();
         res.send(req.user.playLists);
     }
     catch (e) {
@@ -183,6 +196,8 @@ exports.router.post('/newC', [auth_1.auth, playListUniqName_1.playListUniqName],
         yield playList.setCategory(catNum);
         const data = yield categotyPlayList_1.CPlayLists.create(playList);
         yield data.save();
+        req.user.credits += categotyPlayList_1.CategoryPlayList.getCredits();
+        yield req.user.save();
         res.send(data);
     }
     catch (e) {

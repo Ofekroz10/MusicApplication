@@ -23,6 +23,7 @@ class PlayList {
         this.videos = [];
         this.name = name;
     }
+    static getCredits() { return 10; }
     shuffle() {
         let arr = [...this.videos];
         let index = arr.length - 1;
@@ -71,6 +72,7 @@ exports.playListSchema = new mongoose_1.Schema({
 exports.playListSchema.method('addToList', PlayList.prototype.addToList);
 exports.playListSchema.method('removeFromList', PlayList.prototype.removeFromList);
 exports.playListSchema.method('shuffle', PlayList.prototype.shuffle);
+exports.playListSchema.method('getCredits', PlayList.getCredits);
 /* Base model for extends it */
 exports.basePlayList = mongoose.model('PlayListBase', exports.playListSchema);
 const playListsModel = exports.basePlayList.discriminator('PlayList', new mongoose.Schema({}));

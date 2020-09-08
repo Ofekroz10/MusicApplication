@@ -4,8 +4,8 @@ import {auth} from '../middleware/auth'
 import {playListUniqName} from '../middleware/playListUniqName' 
 import {playListGetByName} from '../middleware/playListGetByName' 
 import { Video, VideoDocument, Videos } from '../mongodb/models/video';
-import { PlayList,IPlayListDocument,playLists,playListType } from '../mongodb/models/playList';
-import {serachByKeyword, doRequest} from '../youtubeApi/youtube'
+import { PlayList,IPlayListDocument,playLists,playListType, playListSchema } from '../mongodb/models/playList';
+import {serachByKeyword, doRequest, getCredits} from '../youtubeApi/youtube'
 import {asyncForEach} from '../Helpers/helper'
 import mongoose = require('mongoose')
 
@@ -34,6 +34,8 @@ router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
         const playList:PlayList = new PlayList(req.user._id,req.body.name);
         const data:IPlayListDocument = await playLists.create(playList);
         await data.save();
+        req.user.credits += PlayList.getCredits();
+        await req.user.save();
         res.send(data);
     }
     catch(e){
@@ -41,7 +43,7 @@ router.post('/new',[auth,playListUniqName],async (req:any,res:any)=>{
     }
 })
   
-router.get('/summaryPretty',auth,async(req:any,res)=>{
+router.get('/extendedSummary',auth,async(req:any,res)=>{
 
     try{
 
@@ -129,6 +131,8 @@ router.put('/:pName/add',[auth,playListGetByName],async(req:any,res:any)=>{
         const video = new Video(req.body.name,req.body.channelName,req.body.youtubeId,req.body.categoryNum);
         playList.addToList(video);
         await playList.save();
+        req.user.credits += Video.getCredits();
+        await req.user.save();
         res.send(playList.videos); 
     }
     catch(e){
@@ -139,11 +143,13 @@ router.put('/:pName/add',[auth,playListGetByName],async(req:any,res:any)=>{
 router.put('/:pName/addSome',[auth,playListGetByName],async(req:any,res:any)=>{
     try{
         const playList:IPlayListDocument = req.user.playLists[0];
+        const count = req.body.length;
         req.body.forEach((x:Video)=>{
             const video = new Video(x.name,x.channelName,x.youtubeId,x.categoryNum);
             playList.addToList(video);
         })
         await playList.save();
+        req.user.credits += count * Video.getCredits();
         res.send(playList.videos); 
     }
     catch(e){
@@ -161,6 +167,8 @@ router.put('/:pName/youtube/:keyword',[auth,playListGetByName],async(req:any,res
         const pName = req.params.pName;
         const data:Video[] = await doRequest(`http://localhost:3000/playList/${pName}/addSome`,'PUT'
         ,results,req.token);
+        req.user.credits+= getCredits(limitation);
+        await req.user.save();
         res.send(data);
     }
     catch(e){
@@ -177,6 +185,8 @@ router.delete('/:pName/delete',[auth,playListGetByName],async(req:any,res:any)=>
         const yId = req.body.yId;
         playList.removeFromList(yId);
         await playList.save();
+        req.user.credits -= Video.getCredits();
+        await req.user.save();
         res.send(playList.videos); 
     }
     catch(e){
@@ -187,8 +197,11 @@ router.delete('/:pName/delete',[auth,playListGetByName],async(req:any,res:any)=>
 router.delete('/:pName',[auth,playListGetByName],async(req:any,res:any)=>{
     try{
         const playList:IPlayListDocument = req.user.playLists[0];
+        const count = playList.videos.length;
         await playLists.deleteOne({name:playList.name, owner:req.user._id});
         await req.user.populate('playLists').execPopulate();
+        req.user.credits -= (count*Video.getCredits()) + (playList.getCredits());
+        await req.user.save();
         res.send(req.user.playLists);
     }
     catch(e){
@@ -210,6 +223,8 @@ router.post('/newC',[auth,playListUniqName],async (req:any,res:any)=>{
         await playList.setCategory(catNum);
         const data:ICPlayListDocument = await CPlayLists.create(playList);
         await data.save();
+        req.user.credits += CategoryPlayList.getCredits();
+        await req.user.save();
         res.send(data);
     }
     catch(e){

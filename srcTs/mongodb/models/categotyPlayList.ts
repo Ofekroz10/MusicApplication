@@ -1,7 +1,7 @@
 import { Document, Schema, model, Model } from 'mongoose'
 import {Video} from './video'
 import mongoose = require('mongoose')
-import { PlayList, playLists, basePlayList } from './playList'
+import { PlayList, playLists, basePlayList, playListSchema } from './playList'
 import { doRequest } from '../../youtubeApi/youtube'
 
 
@@ -31,6 +31,8 @@ export class CategoryPlayList extends PlayList{
         super.addToList(video);   
     }
 
+    public static getCredits():number{return 15;}
+
     private async validCat(catNumber:number):Promise<boolean>{
         const catTuple:[[number,string]]  = await doRequest('http://localhost:3000/youtube/categories');
         const isCat = catTuple.find(x => x[0] === catNumber);
@@ -48,6 +50,7 @@ const categorySchema = new Schema({
 })
 
 categorySchema.method('addToList',CategoryPlayList.prototype.addToList);
+playListSchema.method('getCredits',CategoryPlayList.getCredits);
 
 const CategoriesPlayListModel =  basePlayList.discriminator<ICPlayListDocument>
 ('CategoryPlayList',categorySchema);

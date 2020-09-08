@@ -22,13 +22,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCat = exports.getTupleCat = exports.serachByKeyword = exports.doRequest = void 0;
+exports.getCat = exports.getTupleCat = exports.serachByKeyword = exports.doRequest = exports.getCredits = void 0;
 const request = require("request");
 const video_1 = require("../mongodb/models/video");
 /*
     This method make request to support async & await
     by creating a promise for every request
 */
+exports.getCredits = (numOfVideo) => video_1.Video.getCredits() * 0.5 * numOfVideo;
 function doRequest(url, method = 'GET', body = {}, token = '') {
     const headers = {
         "Authorization": "Bearer " + token,

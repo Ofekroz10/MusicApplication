@@ -20,6 +20,7 @@ export class PlayList{
     name:string;
     videos:Video[];
     owner:Schema.Types.ObjectId;
+    public static getCredits():number{return 10;}
 
     constructor(owner:Schema.Types.ObjectId, name:string){
         this.owner = owner;
@@ -85,8 +86,11 @@ export const playListSchema = new Schema({
 playListSchema.method('addToList',PlayList.prototype.addToList);
 playListSchema.method('removeFromList',PlayList.prototype.removeFromList);
 playListSchema.method('shuffle',PlayList.prototype.shuffle);
+playListSchema.method('getCredits',PlayList.getCredits);
 
-export interface IPlayListDocument extends Document, PlayList{}
+export interface IPlayListDocument extends Document, PlayList{
+    getCredits():number;
+}
 
 /* Base model for extends it */ 
 export const basePlayList = mongoose.model<IPlayListDocument>('PlayListBase',playListSchema);

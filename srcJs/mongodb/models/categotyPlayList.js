@@ -34,6 +34,7 @@ class CategoryPlayList extends playList_1.PlayList {
             throw new Error(`cannot add video with category ${video.categoryNum} to playlist with category ${this.category}`);
         super.addToList(video);
     }
+    static getCredits() { return 15; }
     validCat(catNumber) {
         return __awaiter(this, void 0, void 0, function* () {
             const catTuple = yield youtube_1.doRequest('http://localhost:3000/youtube/categories');
@@ -50,5 +51,6 @@ const categorySchema = new mongoose_1.Schema({
     }
 });
 categorySchema.method('addToList', CategoryPlayList.prototype.addToList);
+playList_1.playListSchema.method('getCredits', CategoryPlayList.getCredits);
 const CategoriesPlayListModel = playList_1.basePlayList.discriminator('CategoryPlayList', categorySchema);
 exports.CPlayLists = mongoose_1.model('CategoryPlayList');

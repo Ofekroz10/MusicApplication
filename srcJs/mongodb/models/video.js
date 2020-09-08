@@ -19,6 +19,7 @@ class Video {
         this.youtubeId = youtubeId;
         this.categoryNum = categoryNum;
     }
+    static getCredits() { return 5; }
     equalsVid(other) {
         return this.youtubeId === other.youtubeId;
     }

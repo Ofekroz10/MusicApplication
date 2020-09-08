@@ -9,6 +9,8 @@ export class Video{
     youtubeId:string;
     categoryNum:number;
 
+    public static getCredits():number{return 5;}
+
    constructor(name:string,channelName:string,youtubeId:string, categoryNum:number){
        this.name = name;
        this.channelName = channelName;
