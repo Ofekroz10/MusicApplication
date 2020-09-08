@@ -596,7 +596,7 @@ Get the top 10 users according to there credits:
 [GET] http://localhost:3000/users/credits
 ```
    
-**When a user achieves 1000 credits, he gets an email.**
+**When a user achieves 1000 credits, he is notified about this via email.**
 
 ```diff
 - PlayTube can do more actions, explore more functions in the project ! 
