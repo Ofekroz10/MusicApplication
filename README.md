@@ -578,6 +578,24 @@ Results:
 ]
 ```
 
+# User's credits
+Users can achieve credits. Every action: {create playlist, create category playlist, create a playlist from youtube search results ...} has a score, as much as more doing actions you achieve more credits.   
+Action's score:   
+```js
+Create a playlist- 10
+Add a video - 5
+Add videos from youtube search results - 5 * videos.length + 2.5 * videos.length (bonus)
+
+- If you undo an action you lose the action's credits.
+```
+   
+Get the top 10 users according to there credits:   
+
+```js
+[GET] http://localhost:3000/users/credits
+```
+
 ```diff
 - PlayTube can do more actions, explore more functions in the project ! 
-```
+```   
+
